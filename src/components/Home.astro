@@ -1,6 +1,11 @@
 ---
 import astroLogo from '../assets/astro.svg';
 import background from '../assets/background.svg';
+import {supabase} from "../lib/supabase.ts";
+
+const { data, error } = await supabase
+  .from('active_reservations')
+  .select('*');
 ---
 
 <div id="container">
