@@ -39,7 +39,7 @@ function formatDate(timestamp: string): string {
 ---
 
 <main>
-  <h1>Environments</h1>
+  <h1>Test Environments</h1>
 
   <div class="controls">
     <div class="name-input">
@@ -52,7 +52,7 @@ function formatDate(timestamp: string): string {
         <option value="60">1 hour</option>
         <option value="120" selected>2 hours</option>
         <option value="240">4 hours</option>
-        <option value="eod">Till end of day</option>
+        <option value="eod">The rest of the day</option>
       </select>
     </div>
   </div>
@@ -71,13 +71,13 @@ function formatDate(timestamp: string): string {
               <p><strong>From:</strong> {formatDate(reservation.reserved_from)}</p>
               <p><strong>Until:</strong> {formatDate(reservation.reserved_until)}</p>
             </div>
-            <button class="reserve-btn" data-env={env} data-has-reservation="true" data-reserved-by={reservation.reserved_by}>Reserve</button>
+            <button class="reserve-btn" data-env={env} data-has-reservation="true" data-reserved-by={reservation.reserved_by}>Claim</button>
             <button class="end-reservation-btn" data-env={env} data-reserved-by={reservation.reserved_by} hidden>End reservation</button>
           ) : (
               <div class="env-text">
                 <p class="free-label">FREE</p>
               </div>
-            <button class="reserve-btn" data-env={env} data-has-reservation="false">Reserve</button>
+            <button class="reserve-btn" data-env={env} data-has-reservation="false">Claim</button>
           )}
         </div>
       );

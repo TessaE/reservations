@@ -1,3 +1,5 @@
+import { createClient } from "@supabase/supabase-js";
+
 const nameInput = document.getElementById("user-name") as HTMLInputElement;
 const durationSelect = document.getElementById("reserve-duration") as HTMLSelectElement;
 const dialog = document.getElementById("confirm-dialog") as HTMLDialogElement;
@@ -137,3 +139,20 @@ confirmNo.addEventListener("click", () => {
   dialog.close();
   pendingEnv = null;
 });
+
+// Real-time: reload page when any reservation changes
+const supabase = createClient(
+  import.meta.env.PUBLIC_SUPABASE_URL,
+  import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+);
+
+supabase
+  .channel("reservations-changes")
+  .on(
+    "postgres_changes",
+    { event: "*", schema: "public", table: "reservations" },
+    () => {
+      window.location.reload();
+    }
+  )
+  .subscribe();

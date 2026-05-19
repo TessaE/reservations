@@ -1,7 +1,7 @@
 @layer base, components;
 
 :root {
-  --color-bg: oklch(0.26 0.022 175);
+  --color-bg: oklch(0.16 0.022 175);
   --color-text: oklch(0.98 0.0055 175);
   --color-warning: darkorange;
   --color-accent: oklch(0.8 0.06 234.5);
