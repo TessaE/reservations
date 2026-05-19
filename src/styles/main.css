@@ -1,7 +1,5 @@
-/* === Layer order === */
 @layer base, components;
 
-/* === Custom properties === */
 :root {
   --color-bg: oklch(0.26 0.022 175);
   --color-text: oklch(0.98 0.0055 175);
@@ -38,17 +36,27 @@
     margin: var(--space-lg);
     padding-bottom: var(--space-lg);
   }
+
+  .bold {
+    font-weight: 700;
+  }
 }
 
 /* === Components: page-specific UI === */
 @layer components {
-  .name-input {
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: var(--space-md);
     margin-block: var(--space-lg);
+  }
 
-    > input {
-      padding: var(--space-sm);
-      font-size: 1rem;
-    }
+  .name-input > input,
+  .duration-input > select {
+    padding: var(--space-sm);
+    font-size: 1rem;
   }
 
   .list-envs {
@@ -124,7 +132,12 @@
     background: oklch(from var(--color-accent) l c h / 0.1);
   }
 
+  dialog {
+    padding: var(--space-md);
+  }
+
   dialog .button-bar {
+    margin-top: var(--space-lg);
     display: flex;
     justify-content: flex-end;
     gap: var(--space-md);
@@ -140,10 +153,4 @@
   dialog button:focus-visible {
     background: oklch(from var(--color-bg) l c h / 0.1);
   }
-
-  /*TODO: move to utilities layer?*/
-  .bold {
-    font-weight: 700;
-  }
 }
-

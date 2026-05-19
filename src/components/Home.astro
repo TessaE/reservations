@@ -41,9 +41,20 @@ function formatDate(timestamp: string): string {
 <main>
   <h1>Environments</h1>
 
-  <div class="name-input">
-    <label for="user-name">Your name:</label>
-    <input type="text" id="user-name" placeholder="Enter your name" />
+  <div class="controls">
+    <div class="name-input">
+      <label for="user-name">Your name:</label>
+      <input type="text" id="user-name" placeholder="Enter your name" />
+    </div>
+    <div class="duration-input">
+      <label for="reserve-duration">Reserve for:</label>
+      <select id="reserve-duration">
+        <option value="60">1 hour</option>
+        <option value="120" selected>2 hours</option>
+        <option value="240">4 hours</option>
+        <option value="eod">Till end of day</option>
+      </select>
+    </div>
   </div>
 
   {error && <p>Error loading reservations: {error.message}</p>}
@@ -82,127 +93,6 @@ function formatDate(timestamp: string): string {
   </div>
 </dialog>
 
-<script>
-  const nameInput = document.getElementById("user-name") as HTMLInputElement;
-  const dialog = document.getElementById("confirm-dialog") as HTMLDialogElement;
-  const confirmYes = document.getElementById("confirm-yes") as HTMLButtonElement;
-  const confirmNo = document.getElementById("confirm-no") as HTMLButtonElement;
-
-  // Load name from localStorage
-  const storedName = localStorage.getItem("reservations-user-name");
-  if (storedName) {
-    nameInput.value = storedName;
-  }
-
-  // Save name to localStorage on input
-  nameInput.addEventListener("input", () => {
-    localStorage.setItem("reservations-user-name", nameInput.value);
-    updateButtons();
-  });
-
-  // Show/hide buttons based on current user name
-  function updateButtons() {
-    const currentName = nameInput.value.trim().toLowerCase();
-
-    document.querySelectorAll(".end-reservation-btn").forEach((btn) => {
-      const reservedBy = ((btn as HTMLElement).dataset.reservedBy ?? "").toLowerCase();
-      (btn as HTMLElement).hidden = currentName !== reservedBy;
-    });
-
-    document.querySelectorAll(".reserve-btn").forEach((btn) => {
-      const reservedBy = ((btn as HTMLElement).dataset.reservedBy ?? "").toLowerCase();
-      const hasReservation = (btn as HTMLElement).dataset.hasReservation === "true";
-      (btn as HTMLElement).hidden = hasReservation && currentName === reservedBy;
-    });
-  }
-
-  updateButtons();
-
-  // End reservation logic
-  document.querySelectorAll(".end-reservation-btn").forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      const env = (btn as HTMLElement).dataset.env!;
-      const reservedBy = (btn as HTMLElement).dataset.reservedBy!;
-
-      const response = await fetch("/api/end-reservation", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ environment: env, reserved_by: reservedBy }),
-      });
-
-      if (response.ok) {
-        window.location.reload();
-      } else {
-        const data = await response.json();
-        alert(`Failed to end reservation: ${data.error}`);
-      }
-    });
-  });
-
-  // Reserve logic
-  let pendingEnv: string | null = null;
-
-  async function reserve(environment: string, force: boolean) {
-    const name = nameInput.value.trim();
-    if (!name) {
-      alert("Please enter your name first.");
-      return;
-    }
-
-    const now = new Date();
-    const until = new Date(now.getTime() + 2 * 60 * 60 * 1000); // 2 hours from now
-
-    const response = await fetch("/api/reserve", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        environment,
-        reserved_by: name,
-        reserved_from: now.toISOString(),
-        reserved_until: until.toISOString(),
-        force,
-      }),
-    });
-
-    if (response.ok) {
-      window.location.reload();
-    } else {
-      const data = await response.json();
-      alert(`Failed to reserve: ${data.error}`);
-    }
-  }
-
-  document.querySelectorAll(".reserve-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const env = (btn as HTMLElement).dataset.env!;
-      const hasReservation = (btn as HTMLElement).dataset.hasReservation === "true";
-
-      if (hasReservation) {
-        pendingEnv = env;
-        const reservedBy = (btn as HTMLElement).dataset.reservedBy ?? "Your colleague";
-        document.getElementById("confirm-name")!.textContent = reservedBy;
-        dialog.showModal();
-      } else {
-        reserve(env, false);
-      }
-    });
-  });
-
-  confirmYes.addEventListener("click", () => {
-    dialog.close();
-    if (pendingEnv) {
-      reserve(pendingEnv, true);
-      pendingEnv = null;
-    }
-  });
-
-  confirmNo.addEventListener("click", () => {
-    dialog.close();
-    pendingEnv = null;
-  });
-</script>
+<script src="../scripts/main.ts"></script>
 
 <!--TODOs:-->
-<!-- make time period for reservation editable - 2 hours as default -->
-<!-- inquire about safety of current RLS policies and potential improvements -->
-<!-- move the script stuff to a separate file; maybe comment/refactor -->

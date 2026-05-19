@@ -5,6 +5,7 @@ let envModule: Record<string, string> | null = null;
 async function getEnv() {
   if (envModule) return envModule;
   try {
+    // @ts-ignore
     const mod = await import("cloudflare:workers");
     envModule = mod.env as Record<string, string>;
     return envModule;
