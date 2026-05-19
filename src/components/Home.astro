@@ -1,10 +1,12 @@
 ---
-import { supabase } from "../lib/supabase";
 import { Environment } from "../lib/environments";
 
-const { data: reservations, error } = await supabase
-  .from("active_reservations")
-  .select("*");
+interface Props {
+  reservations: any[] | null;
+  error: any;
+}
+
+const { reservations, error } = Astro.props;
 
 function getReservation(env: string) {
   return reservations?.find((r) => r.environment === env) ?? null;
