@@ -3,7 +3,7 @@ import Home from '../components/Home.astro';
 import Layout from '../layouts/Layout.astro';
 import { createSupabaseClient } from '../lib/supabase';
 
-const supabase = createSupabaseClient(Astro.locals);
+const supabase = await createSupabaseClient();
 
 const { data: reservations, error } = await supabase
   .from("active_reservations")
