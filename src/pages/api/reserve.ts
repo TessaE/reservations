@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { supabase } from "../../lib/supabase.ts";
+import { supabase } from "../../lib/supabase";
 
 export const POST: APIRoute = async ({ request }) => {
   const body = await request.json();
@@ -11,18 +11,30 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  // If force is true, delete any existing active reservation for this environment first
+  // If force is true, expire any existing active reservation for this environment first
   if (force) {
-    const { error: deleteError } = await supabase
+    const { data: existing } = await supabase
       .from("reservations")
-      .delete()
+      .select("id, reserved_from")
       .eq("environment", environment)
-      .gt("reserved_until", new Date().toISOString());
+      .gt("reserved_until", new Date().toISOString())
+      .single();
 
-    if (deleteError) {
-      return new Response(JSON.stringify({ error: deleteError.message }), {
-        status: 500,
-      });
+    if (existing) {
+      const fiveSecondsAgo = new Date(Date.now() - 5000);
+      const reservedFrom = new Date(existing.reserved_from);
+      const endTime = fiveSecondsAgo > reservedFrom ? fiveSecondsAgo.toISOString() : reservedFrom.toISOString();
+
+      const { error: expireError } = await supabase
+        .from("reservations")
+        .update({ reserved_until: endTime })
+        .eq("id", existing.id);
+
+      if (expireError) {
+        return new Response(JSON.stringify({ error: expireError.message }), {
+          status: 500,
+        });
+      }
     }
   }
 
@@ -40,4 +52,3 @@ export const POST: APIRoute = async ({ request }) => {
 
   return new Response(JSON.stringify(data), { status: 201 });
 };
-

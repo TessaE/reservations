@@ -3,9 +3,14 @@
 
 /* === Custom properties === */
 :root {
-  --color-bg: oklch(0.34 0.022 175);
+  --color-bg: oklch(0.26 0.022 175);
   --color-text: oklch(0.98 0.0055 175);
-  --font-main: "Red Hat Mono", monospace;
+  --color-warning: darkorange;
+  --color-accent: oklch(0.8 0.06 234.5);
+  --font-main: "Red Hat Mono";
+  --space-lg: 40px;
+  --space-md: 20px;
+  --space-sm: 10px;
 }
 
 /* === Base: resets, typography, global defaults === */
@@ -23,15 +28,122 @@
     height: 100%;
     background-color: var(--color-bg);
     color: var(--color-text);
-    font-family: var(--font-main);
+    font-family: var(--font-main), monospace;
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
+  }
+
+  main {
+    margin: var(--space-lg);
+    padding-bottom: var(--space-lg);
   }
 }
 
 /* === Components: page-specific UI === */
 @layer components {
-  /* Add component styles here */
+  .name-input {
+    margin-block: var(--space-lg);
+
+    > input {
+      padding: var(--space-sm);
+      font-size: 1rem;
+    }
+  }
+
+  .list-envs {
+    display: grid;
+    gap: var(--space-lg);
+    grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  }
+
+  .env-card {
+    display: grid;
+    gap: 16px;
+    grid-template-rows: max-content 130px max-content;
+    border: 1px solid oklch(from var(--color-text) l c h / 0.15);
+    background: oklch(from var(--color-text) l c h / 0.04);
+    border-radius: 4px;
+    padding: var(--space-md);
+
+    > h2 {
+      margin-block: 0;
+    }
+
+    > .env-text {
+      align-self: center;
+
+      &:has(.free-label) {
+        justify-self: center;
+      }
+
+      .free-label {
+        font-size: 1.2rem;
+        margin-top: 0;
+      }
+    }
+  }
+
+  button {
+    background: transparent;
+    color: var(--color-text);
+    border: 1px solid var(--color-text);
+    border-radius: 4px;
+    padding: 8px 16px;
+    text-transform: uppercase;
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    width: min(400px, 100%);
+    justify-self: center;
+    align-self: end;
+  }
+
+  .reserve-btn[data-has-reservation="true"] {
+    color: var(--color-warning);
+    border-color: var(--color-warning);
+  }
+
+  .end-reservation-btn {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  button:hover,
+  button:focus-visible {
+    background: oklch(from var(--color-text) l c h / 0.1);
+  }
+
+  .reserve-btn[data-has-reservation="true"]:hover,
+  .reserve-btn[data-has-reservation="true"]:focus-visible {
+    background: oklch(from var(--color-warning) l c h / 0.1);
+  }
+
+  .end-reservation-btn:hover,
+  .end-reservation-btn:focus-visible {
+    background: oklch(from var(--color-accent) l c h / 0.1);
+  }
+
+  dialog .button-bar {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-md);
+  }
+
+  dialog button {
+    width: auto;
+    color: var(--color-bg);
+    border-color: var(--color-bg);
+  }
+
+  dialog button:hover,
+  dialog button:focus-visible {
+    background: oklch(from var(--color-bg) l c h / 0.1);
+  }
+
+  /*TODO: move to utilities layer?*/
+  .bold {
+    font-weight: 700;
+  }
 }
 
