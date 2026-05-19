@@ -9,9 +9,5 @@
 	},
 	"observability": {
 		"enabled": true
-	},
-	"vars": {
-		"SUPABASE_URL": "",
-		"SUPABASE_ANON_KEY": ""
 	}
 }
