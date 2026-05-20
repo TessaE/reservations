@@ -11,31 +11,6 @@ const { reservations, error } = Astro.props;
 function getReservation(env: string) {
   return reservations?.find((r) => r.environment === env) ?? null;
 }
-
-function formatDate(timestamp: string): string {
-  const date = new Date(timestamp);
-  const now = new Date();
-
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
-  const dateDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-
-  const time = date.toLocaleTimeString(undefined, { timeStyle: "short" });
-
-  if (dateDay.getTime() === today.getTime()) {
-    return `Today, ${time}`;
-  }
-  if (dateDay.getTime() === tomorrow.getTime()) {
-    return `Tomorrow, ${time}`;
-  }
-
-  return date.toLocaleString(undefined, {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-}
 ---
 
 <main>
@@ -63,23 +38,28 @@ function formatDate(timestamp: string): string {
     {Object.values(Environment).map((env) => {
       const reservation = getReservation(env);
       return (
-        <div class="env-card">
-          <h2>{env}</h2>
+        <>
           {reservation ? (
-            <div class="env-text">
-              <p><strong>Reserved by:</strong> {reservation.reserved_by}</p>
-              <p><strong>From:</strong> {formatDate(reservation.reserved_from)}</p>
-              <p><strong>Until:</strong> {formatDate(reservation.reserved_until)}</p>
+            <div class="env-card" data-expires={reservation.reserved_until}>
+              <h2>{env}</h2>
+              <div class="env-text">
+                <p><strong>Reserved by:</strong> {reservation.reserved_by}</p>
+                <p><strong>From:</strong> <span class="format-date" data-timestamp={reservation.reserved_from}></span></p>
+                <p><strong>Until:</strong> <span class="format-date" data-timestamp={reservation.reserved_until}></span></p>
+              </div>
+              <button class="reserve-btn" data-env={env} data-has-reservation="true" data-reserved-by={reservation.reserved_by}>Claim</button>
+              <button class="end-reservation-btn" data-env={env} data-reserved-by={reservation.reserved_by} hidden>End reservation</button>
             </div>
-            <button class="reserve-btn" data-env={env} data-has-reservation="true" data-reserved-by={reservation.reserved_by}>Claim</button>
-            <button class="end-reservation-btn" data-env={env} data-reserved-by={reservation.reserved_by} hidden>End reservation</button>
           ) : (
+            <div class="env-card">
+              <h2>{env}</h2>
               <div class="env-text">
                 <p class="free-label">FREE</p>
               </div>
-            <button class="reserve-btn" data-env={env} data-has-reservation="false">Claim</button>
+              <button class="reserve-btn" data-env={env} data-has-reservation="false">Claim</button>
+            </div>
           )}
-        </div>
+        </>
       );
     })}
   </div>

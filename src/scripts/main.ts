@@ -1,5 +1,39 @@
 import { createClient } from "@supabase/supabase-js";
 
+// Format dates using the browser's locale and timezone
+function formatDate(timestamp: string): string {
+  const date = new Date(timestamp);
+  const now = new Date();
+
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const dateDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+  const time = date.toLocaleTimeString(undefined, { timeStyle: "short" });
+
+  if (dateDay.getTime() === today.getTime()) {
+    return `Today, ${time}`;
+  }
+  if (dateDay.getTime() === tomorrow.getTime()) {
+    return `Tomorrow, ${time}`;
+  }
+
+  return date.toLocaleString(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+}
+
+// Apply formatting to all date elements
+document.querySelectorAll(".format-date").forEach((el) => {
+  const timestamp = (el as HTMLElement).dataset.timestamp;
+  if (timestamp) {
+    el.textContent = formatDate(timestamp);
+  }
+});
+
 const nameInput = document.getElementById("user-name") as HTMLInputElement;
 const durationSelect = document.getElementById("reserve-duration") as HTMLSelectElement;
 const dialog = document.getElementById("confirm-dialog") as HTMLDialogElement;
@@ -138,6 +172,17 @@ confirmYes.addEventListener("click", () => {
 confirmNo.addEventListener("click", () => {
   dialog.close();
   pendingEnv = null;
+});
+
+// Set timers to reload when reservations expire
+document.querySelectorAll(".env-card[data-expires]").forEach((card) => {
+  const expires = (card as HTMLElement).dataset.expires;
+  if (expires) {
+    const msUntilExpiry = new Date(expires).getTime() - Date.now();
+    if (msUntilExpiry > 0) {
+      setTimeout(() => window.location.reload(), msUntilExpiry + 1000);
+    }
+  }
 });
 
 // Real-time: reload page when any reservation changes
