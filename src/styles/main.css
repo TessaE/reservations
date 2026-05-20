@@ -69,8 +69,8 @@
     display: grid;
     gap: 16px;
     grid-template-rows: max-content 130px max-content;
-    border: 1px solid oklch(from var(--color-text) l c h / 0.15);
-    background: oklch(from var(--color-text) l c h / 0.04);
+    border: 1px solid oklch(from var(--color-accent) l c h / 0.25);
+    background: oklch(from var(--color-accent) l c h / 0.08);
     border-radius: 4px;
     padding: var(--space-md);
 
