@@ -5,12 +5,24 @@ export const POST: APIRoute = async ({ request }) => {
   const supabase = await createSupabaseClient();
 
   const body = await request.json();
-  const { environment, reserved_by, reserved_from, reserved_until, force } = body;
+  const { environment, reserved_from, reserved_until, force } = body;
+  const reserved_by = typeof body.reserved_by === "string" ? body.reserved_by.trim().slice(0, 50) : "";
 
   if (!environment || !reserved_by || !reserved_from || !reserved_until) {
     return new Response(JSON.stringify({ error: "Missing required fields" }), {
       status: 400,
     });
+  }
+
+  const fromDate = new Date(reserved_from);
+  const untilDate = new Date(reserved_until);
+  const MAX_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+  if (isNaN(fromDate.getTime()) || isNaN(untilDate.getTime())) {
+    return new Response(JSON.stringify({ error: "Invalid date fields" }), { status: 400 });
+  }
+  if (untilDate <= fromDate || untilDate.getTime() - fromDate.getTime() > MAX_DURATION_MS) {
+    return new Response(JSON.stringify({ error: "Invalid reservation duration" }), { status: 400 });
   }
 
   // If force is true, expire any existing active reservation for this environment first

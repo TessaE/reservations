@@ -5,7 +5,8 @@ export const POST: APIRoute = async ({ request }) => {
   const supabase = await createSupabaseClient();
 
   const body = await request.json();
-  const { environment, reserved_by } = body;
+  const { environment } = body;
+  const reserved_by = typeof body.reserved_by === "string" ? body.reserved_by.trim().slice(0, 50) : "";
 
   if (!environment || !reserved_by) {
     return new Response(JSON.stringify({ error: "Missing required fields" }), {

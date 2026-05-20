@@ -57,6 +57,7 @@
   .duration-input > select {
     padding: var(--space-sm);
     font-size: 1rem;
+    background-color: var(--color-text);
   }
 
   .list-envs {
