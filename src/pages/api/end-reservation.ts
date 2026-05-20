@@ -18,7 +18,7 @@ export const POST: APIRoute = async ({ request }) => {
     .from("reservations")
     .select("id, reserved_from")
     .eq("environment", environment)
-    .ilike("reserved_by", reserved_by)
+    .eq("reserved_by", reserved_by)
     .gt("reserved_until", new Date().toISOString())
     .single();
 
