@@ -174,6 +174,13 @@ confirmNo.addEventListener("click", () => {
   pendingEnv = null;
 });
 
+// Reload when the tab becomes visible again (e.g. after being idle in background)
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") {
+    window.location.reload();
+  }
+});
+
 // Set timers to reload when reservations expire
 document.querySelectorAll(".env-card[data-expires]").forEach((card) => {
   const expires = (card as HTMLElement).dataset.expires;
